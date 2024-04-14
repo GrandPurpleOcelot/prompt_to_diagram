@@ -17,7 +17,7 @@ if 'plantuml_code' not in st.session_state:
     st.session_state['plantuml_code'] = ""
 
 # Function to convert natural language instruction to PlantUML code using OpenAI
-def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_theme, use_note):
+def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_theme, use_note, error_details=None, failed_code=None):
     if diagram_type == "Let AI decide best Diagram":
         diagram_type = 'most appropriate diagram'
     # Construct the instruction message based on toggles
@@ -29,6 +29,9 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
     if use_note:
         instruction_message += " Use note if needed to explain more details."
     instruction_message += f" You MUST Output PlantUML code for a {diagram_type} only and explain nothing."
+
+    if error_details and failed_code:
+        nl_instruction += f"\n\nPrevious error details: {error_details}\n\nFailed PlantUML code:\n{failed_code}"
 
     try:
         # Use the OpenAI API to generate a response
@@ -49,36 +52,42 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
 
 # Function to generate UML diagram from PlantUML code
 def generate_uml_diagram(plantuml_code, resolution=4096):
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".puml") as temp_file:
-        temp_file.write(plantuml_code.encode())
-        temp_file_path = temp_file.name
+    retries = 2  # Number of retries
+    error_message = None  # Initialize error message
     
-    # Generate the diagram using the PlantUML .jar
-    output_dir = tempfile.gettempdir()  # Use temp directory for output
-    subprocess_result = subprocess.run(
-        ['java', '-jar', plantuml_jar_path, '-DPLANTUML_LIMIT_SIZE={}'.format(resolution), temp_file_path, '-o', output_dir],
-        capture_output=True, text=True
-    )
-    
-    # Remove the temporary file
-    os.remove(temp_file_path)
-    
-    # Check if PlantUML process ran successfully
-    if subprocess_result.returncode != 0:
-        # Display error message
-        st.error(f"An error occurred while generating the diagram: {subprocess_result.stderr}")
-        return None
-    
-    # Construct the output file path
-    output_file = Path(output_dir) / (Path(temp_file_path).stem + '.png')
-    
-    # Check if the output file was created
-    if not output_file.exists():
-        st.error("Failed to create the output diagram.")
-        return None
-    
-    # Return the path to the generated diagram
-    return output_file
+    while retries >= 0:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".puml") as temp_file:
+            temp_file.write(plantuml_code.encode())
+            temp_file_path = temp_file.name
+        
+        # Generate the diagram using the PlantUML .jar
+        output_dir = tempfile.gettempdir()  # Use temp directory for output
+        subprocess_result = subprocess.run(
+            ['java', '-jar', plantuml_jar_path, '-DPLANTUML_LIMIT_SIZE={}'.format(resolution), temp_file_path, '-o', output_dir],
+            capture_output=True, text=True
+        )
+        
+        # Remove the temporary file
+        os.remove(temp_file_path)
+        
+        # Check if PlantUML process ran successfully
+        if subprocess_result.returncode == 0:
+            # Construct the output file path
+            output_file = Path(output_dir) / (Path(temp_file_path).stem + '.png')
+            
+            # Check if the output file was created
+            if not output_file.exists():
+                error_message = "Failed to create the output diagram."
+                st.error(error_message)
+            else:
+                return str(output_file), None  # Return the path to the generated diagram
+        else:
+            error_message = f"An error occurred while generating the diagram: {subprocess_result.stderr}"
+            st.error(error_message)
+            retries -= 1  # Decrement retries and continue if there are retries left
+        
+    # Return None and error message after exhausting retries
+    return None, error_message
 
 # Function to create a download link for the image
 def get_image_download_link(img_path):
@@ -127,35 +136,70 @@ convert_button = st.button("Convert to PlantUML", type="primary",use_container_w
 plantuml_code_placeholder = st.empty()
 
 # When the button is clicked, convert the natural language to PlantUML code
+# Streamlit application retry logic
 if convert_button:
-    generated_code = nl_to_plantuml(nl_instruction, selected_diagram_type, include_title, use_aws_orange_theme, use_note)
-    if generated_code:
-        st.session_state['plantuml_code'] = generated_code
-        st.session_state['nl_instruction'] = nl_instruction
-        st.success("Successfully converted to PlantUML code.")
-    else:
-        st.session_state['plantuml_code'] = ''
+    retry_count = 0
+    error_message = None
+    while retry_count < 3:
+        generated_code = nl_to_plantuml(
+            nl_instruction,
+            selected_diagram_type,
+            include_title,
+            use_aws_orange_theme,
+            use_note,
+            error_details=error_message,
+            failed_code=st.session_state['plantuml_code'] if error_message else None
+        )
+        if generated_code:
+            st.session_state['plantuml_code'] = generated_code
+            st.session_state['nl_instruction'] = nl_instruction
 
-# Check if there is PlantUML code in the session state before creating the text_area
-if st.session_state['plantuml_code']:
-    # Create the text_area for PlantUML code inside the placeholder
-    plantuml_code = plantuml_code_placeholder.text_area(
-        "You can edit the diagram if you wish 👇, diagram will updated accordingly 🥳:",
-        value=st.session_state['plantuml_code'],
-        height=300,
-        key="plantuml_code_area"
-    )
-    # Update the session state when the user edits the code
-    st.session_state['plantuml_code'] = plantuml_code
-    
-    # Generate and display the diagram
-    output_file_path = generate_uml_diagram(st.session_state['plantuml_code'])
-    if output_file_path:
-        # Display the generated diagram
-        st.image(str(output_file_path), caption='Generated UML Diagram', use_column_width=False)
+            plantuml_code = plantuml_code_placeholder.text_area(
+                "You can edit the diagram if you wish 👇, diagram will updated accordingly 🥳:",
+                value=st.session_state['plantuml_code'],
+                height=300,
+                key="plantuml_code_area"
+            )
+            output_file_path, error_message = generate_uml_diagram(st.session_state['plantuml_code'])
+            if output_file_path:
+                st.success("Successfully converted to PlantUML code.")
+                # Display the generated diagram
+                st.image(str(output_file_path), caption='Generated UML Diagram', use_column_width=False)
+                
+                # Provide a download button for the image
+                get_image_download_link(str(output_file_path))
+                
+                # Remove the output diagram file after displaying it
+                os.remove(output_file_path)
+                break  # Exit loop on success
+            else:
+                st.error("Failed to generate the diagram. Retrying...")
+                retry_count += 1
+        else:
+            st.error("Failed to convert to PlantUML code.")
+            break  # Exit loop on conversion failure
+else:
+    # Check if there is PlantUML code in the session state before creating the text_area
+    if st.session_state['plantuml_code']:
+        # Create the text_area for PlantUML code inside the placeholder
+        plantuml_code = plantuml_code_placeholder.text_area(
+            "You can edit the diagram if you wish 👇, diagram will updated accordingly 🥳:",
+            value=st.session_state['plantuml_code'],
+            height=300,
+            key="plantuml_code_area"
+        )
+        # Update the session state when the user edits the code
+        st.session_state['plantuml_code'] = plantuml_code
         
-        # Provide a download button for the image
-        get_image_download_link(str(output_file_path))
-        
-        # Remove the output diagram file after displaying it
-        os.remove(output_file_path)
+        st.subheader('Generated Diagram')
+        # Generate and display the diagram
+        output_file_path, error_message = generate_uml_diagram(st.session_state['plantuml_code'])
+        if output_file_path:
+            # Display the generated diagram
+            st.image(str(output_file_path), caption='Generated UML Diagram', use_column_width=False)
+            
+            # Provide a download button for the image
+            get_image_download_link(str(output_file_path))
+            
+            # Remove the output diagram file after displaying it
+            os.remove(output_file_path)
