@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import openai
 import tempfile
+from data import diagram_types
 
 # Path to the PlantUML .jar file
 plantuml_jar_path = './plantuml.jar'
@@ -16,13 +17,25 @@ if 'plantuml_code' not in st.session_state:
     st.session_state['plantuml_code'] = ""
 
 # Function to convert natural language instruction to PlantUML code using OpenAI
-def nl_to_plantuml(nl_instruction):
+def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_theme, use_note):
+    if diagram_type == "Let AI decide best Diagram":
+        diagram_type = 'most appropriate diagram'
+    # Construct the instruction message based on toggles
+    instruction_message = f"You are a professional PlantUML coder."
+    if include_title:
+        instruction_message += " Include a title."
+    if use_aws_orange_theme:
+        instruction_message += " Use aws-orange theme."
+    if use_note:
+        instruction_message += " Use note if needed to explain more details."
+    instruction_message += f" You MUST Output PlantUML code for a {diagram_type} only and explain nothing."
+
     try:
         # Use the OpenAI API to generate a response
         openai_response = openai.chat.completions.create(
             model="gpt-4-turbo-preview",
             messages=[
-                {"role": "system", "content": "You are a professional PlantUML coder. Include a title. Use aws-orange theme. Use note if needed to explain more details. You MUST Output PlantUML code only and explain nothing."},
+                {"role": "system", "content": instruction_message},
                 {"role": "user", "content": nl_instruction}
             ],
             temperature=0.5,
@@ -81,12 +94,23 @@ def get_image_download_link(img_path):
 # Streamlit application layout
 st.title('Agent Peter - Diagram Generator')
 
+# Sidebar content
 with st.sidebar:
-    st.header("Instructions")
-    st.write("1. Describe your requirements in natural language.")
-    st.write("2. Click 'Convert to PlantUML' to generate code. Sometime throw error, press again to retry.")
-    st.write("3. Edit the PlantUML code if needed.")
-    st.write("4. Download the generated diagram.")
+    st.header("How to use Peter:")
+    st.write("1. Select the type of diagram you want to create.")
+    st.write("2. Describe your requirements in natural language.")
+    st.write("3. Click **Convert to PlantUML** to generate code. Sometimes it may throw an error; press button again to retry.")
+    st.write("4. You can **Edit** the PlantUML code if needed.")
+    st.write("5. You can **Download** the generated diagram.")
+
+    st.header("Agent controls:")
+    # Select box for choosing diagram type
+    selected_diagram_type = st.selectbox("Choose diagram type:", diagram_types, index=0)
+
+    # Toggles for instruction message content
+    include_title = st.toggle("Include a title.",value=True)
+    use_aws_orange_theme = st.toggle("Use aws-orange theme.", value=True)
+    use_note = st.toggle("Use note if needed to explain more details.", value=True)
 
 # Text area for user to enter natural language instructions
 nl_instruction = st.text_area(
@@ -97,14 +121,14 @@ nl_instruction = st.text_area(
 )
 
 # Button to convert natural language to PlantUML code
-convert_button = st.button("Convert to PlantUML", type="primary")
+convert_button = st.button("Convert to PlantUML", type="primary",use_container_width=True)
 
 # Placeholder for PlantUML code text_area - this will be used to display the text_area conditionally
 plantuml_code_placeholder = st.empty()
 
 # When the button is clicked, convert the natural language to PlantUML code
 if convert_button:
-    generated_code = nl_to_plantuml(nl_instruction)
+    generated_code = nl_to_plantuml(nl_instruction, selected_diagram_type, include_title, use_aws_orange_theme, use_note)
     if generated_code:
         st.session_state['plantuml_code'] = generated_code
         st.session_state['nl_instruction'] = nl_instruction

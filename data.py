@@ -1,3 +1,23 @@
+# Diagram types list
+diagram_types = [
+    "Let AI decide best Diagram",
+    "Class Diagram",
+    "Use Case Diagram",
+    "Sequence Diagram",
+    "Activity Diagram",
+    "Component Diagram",
+    "State Diagram",
+    "Object Diagram",
+    "Deployment Diagram",
+    "Timing Diagram",
+    "Interaction Overview Diagram",
+    "Wireframe",
+    "Archimate Diagram",
+    "Gantt Chart",
+    "MindMap Diagram",
+    "Work Breakdown Structure (WBS) Diagram",
+]
+
 sample_plantuml = '''@startuml
 participant User
 participant "TSLivechat" as TSL
