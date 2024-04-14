@@ -36,7 +36,7 @@ def nl_to_plantuml(nl_instruction):
         return None
 
 # Function to generate UML diagram from PlantUML code
-def generate_uml_diagram(plantuml_code):
+def generate_uml_diagram(plantuml_code, resolution=4096):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".puml") as temp_file:
         temp_file.write(plantuml_code.encode())
         temp_file_path = temp_file.name
@@ -44,7 +44,7 @@ def generate_uml_diagram(plantuml_code):
     # Generate the diagram using the PlantUML .jar
     output_dir = tempfile.gettempdir()  # Use temp directory for output
     subprocess_result = subprocess.run(
-        ['java', '-jar', './plantuml.jar', temp_file_path, '-o', output_dir],
+        ['java', '-jar', plantuml_jar_path, '-DPLANTUML_LIMIT_SIZE={}'.format(resolution), temp_file_path, '-o', output_dir],
         capture_output=True, text=True
     )
     
@@ -80,7 +80,7 @@ def get_image_download_link(img_path):
     return btn
 
 # Streamlit application layout
-st.title('Diagram Generator')
+st.title('Agent Peter - Diagram Generator')
 
 with st.sidebar:
     st.header("Instructions")
@@ -88,8 +88,6 @@ with st.sidebar:
     st.write("2. Click 'Convert to PlantUML' to generate code.")
     st.write("3. Edit the PlantUML code if needed.")
     st.write("4. Download the generated diagram.")
-
-# ...
 
 # Text area for user to enter natural language instructions
 nl_instruction = st.text_area(
@@ -102,6 +100,9 @@ nl_instruction = st.text_area(
 # Button to convert natural language to PlantUML code
 convert_button = st.button("Convert to PlantUML", type="primary")
 
+# Placeholder for PlantUML code text_area - this will be used to display the text_area conditionally
+plantuml_code_placeholder = st.empty()
+
 # When the button is clicked, convert the natural language to PlantUML code
 if convert_button:
     generated_code = nl_to_plantuml(nl_instruction)
@@ -112,24 +113,23 @@ if convert_button:
     else:
         st.session_state['plantuml_code'] = ''
 
-# Text area for user to enter or edit PlantUML code
-# The key parameter is used to create a unique identifier for this widget
-plantuml_code = st.text_area(
-    "Edit the PlantUML code here:",
-    value=st.session_state['plantuml_code'],
-    height=300,
-    key="plantuml_code_area"
-)
-
-# Update session state when the user edits the code
-st.session_state['plantuml_code'] = plantuml_code
-
-# Generate and display the diagram after the PlantUML code is updated (either by conversion or by manual edit)
+# Check if there is PlantUML code in the session state before creating the text_area
 if st.session_state['plantuml_code']:
+    # Create the text_area for PlantUML code inside the placeholder
+    plantuml_code = plantuml_code_placeholder.text_area(
+        "You can edit the diagram if you wish 👇, diagram will updated accordingly 🥳:",
+        value=st.session_state['plantuml_code'],
+        height=300,
+        key="plantuml_code_area"
+    )
+    # Update the session state when the user edits the code
+    st.session_state['plantuml_code'] = plantuml_code
+    
+    # Generate and display the diagram
     output_file_path = generate_uml_diagram(st.session_state['plantuml_code'])
     if output_file_path:
         # Display the generated diagram
-        st.image(str(output_file_path), caption='Generated UML Diagram', use_column_width=True)
+        st.image(str(output_file_path), caption='Generated UML Diagram', use_column_width=False)
         
         # Provide a download button for the image
         get_image_download_link(str(output_file_path))

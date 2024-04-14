@@ -20,3 +20,7 @@ end
 
 @enduml
 '''
+
+in_the_beginning = '''Explain the 12 Apostles of Chris and the meaning of their names in a sentence,
+and their relationship to Chris.
+In the notes describe their stories'''
