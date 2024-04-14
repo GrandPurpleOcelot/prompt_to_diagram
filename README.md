@@ -2,6 +2,8 @@
 
 Agent Peter is a web-based application built with Streamlit that leverages the power of OpenAI's GPT-4 to convert natural language instructions into PlantUML code, which is then used to generate UML diagrams. This tool is designed to help users quickly create diagrams from their ideas without the need to write PlantUML code manually.
 
+![User Interface](interface.png)
+
 ## Features
 
 - **Natural Language Processing**: Describe your diagram requirements in plain English and let the AI convert it to PlantUML code.

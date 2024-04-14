@@ -29,7 +29,6 @@ def nl_to_plantuml(nl_instruction):
             stream=False,
         )
         plantuml_code = openai_response.choices[0].message.content
-        print(openai_response)
         return plantuml_code
     except Exception as e:
         st.error(f"An error occurred with the OpenAI API: {e}")
