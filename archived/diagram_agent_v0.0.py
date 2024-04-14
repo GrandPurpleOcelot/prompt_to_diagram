@@ -4,32 +4,9 @@ import os
 from pathlib import Path
 import base64
 from data import sample_plantuml
-import openai
 
 # Path to the PlantUML .jar file
 plantuml_jar_path = './plantuml.jar'
-
-# Connect to OpenAI key
-openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-# Function to convert natural language instruction to PlantUML code using OpenAI
-def nl_to_plantuml(nl_instruction):
-    try:
-        # Use the OpenAI API to generate a response
-        openai_response = openai.chat.completions.create(
-            model="gpt-4-turbo-preview",
-            messages=[
-                {"role": "system", "content": "You are a professional PlantUML coder. Use aws-orange theme. Output PlantUML code only and explain nothing."},
-                {"role": "user", "content": nl_instruction}
-            ],
-            temperature=0.5,
-            stream=False,
-        )
-        plantuml_code = openai_response.choices[0].message.content
-        return plantuml_code
-    except Exception as e:
-        st.error(f"An error occurred with the OpenAI API: {e}")
-        return None
 
 #  Function to generate UML diagram from PlantUML code
 def generate_uml_diagram(plantuml_code):
@@ -81,21 +58,8 @@ def get_image_download_link(img_path):
 # Streamlit application layout
 st.title('PlantUML Diagram Generator')
 
-# Text area for user to enter natural language instructions
-nl_instruction = st.text_area(label="Describe your requirements in natural language:", height=300, placeholder="Help me create an instruciton on how to make a muffin")
-
-# Button to convert natural language to PlantUML code
-if st.button("Convert to PlantUML"):
-    plantuml_code = nl_to_plantuml(nl_instruction)
-    if plantuml_code:
-        st.success("Successfully converted to PlantUML code.")
-        st.code(plantuml_code)
-else:
-    # Use sample PlantUML code if no conversion has been done yet
-    plantuml_code = sample_plantuml
-
-# Text area for user to enter or edit PlantUML code
-plantuml_code = st.text_area(label="Your PlantUML code:", value=plantuml_code, height=300)
+# Text area for user to enter PlantUML code
+plantuml_code = st.text_area(label= "Your PlantUML code:", value=sample_plantuml, height=300)
 
 # Automatically generate and display the diagram when the code changes
 output_file_path = generate_uml_diagram(plantuml_code)

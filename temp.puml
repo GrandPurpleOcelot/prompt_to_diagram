@@ -1,21 +1,22 @@
+```plantuml
 @startuml
-participant User
-participant "TSLivechat" as TSL
-participant "Alice" as Alice
-participant "Human Agent" as Agent
+!theme aws-orange
 
-User -> TSL: Sends message
-TSL -> Alice: Forwards message
+title How to Make a Muffin
 
-alt If escalation is required
-    Alice -> User: Notifies about escalation
-    Alice -> TSL: Sends escalation signal
-    User -> TSL: Sends another message
-    TSL -> Agent: Forwards message to human agent
-    Agent -> User: Responds to user
-    Agent -> TSL: Sends de-escalation signal
-else No escalation required
-    Alice -> User: Directly responds to query
-end
+start
+
+:Gather Ingredients;
+:Preheat Oven to 375°F (190°C);
+:Mix Dry Ingredients\n(Flour, Baking Powder, Salt);
+:Mix Wet Ingredients\n(Eggs, Milk, Melted Butter);
+:Combine Wet and Dry Ingredients;
+:Add Flavorings\n(Chocolate Chips, Blueberries, etc.);
+:Pour Batter into Muffin Tin;
+:Bake for 20-25 Minutes;
+:Remove from Oven;
+:Cool on Rack;
+stop
 
 @enduml
+```
