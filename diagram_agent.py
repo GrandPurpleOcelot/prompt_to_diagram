@@ -85,7 +85,7 @@ st.title('Agent Peter - Diagram Generator')
 with st.sidebar:
     st.header("Instructions")
     st.write("1. Describe your requirements in natural language.")
-    st.write("2. Click 'Convert to PlantUML' to generate code.")
+    st.write("2. Click 'Convert to PlantUML' to generate code. Sometime throw error, press again to retry.")
     st.write("3. Edit the PlantUML code if needed.")
     st.write("4. Download the generated diagram.")
 
