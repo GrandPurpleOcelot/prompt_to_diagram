@@ -1,19 +1,27 @@
 @startuml
 !theme aws-orange
 
-title How Bitcoin Works - Simplified Thien
+title Bitcoin Transaction Flow Thien
 
-participant "Customer <&person>" as Customer
-entity "Wallet <&wallet>" as Wallet
-database "Blockchain <&database>" as Blockchain
-participant "Miner <&cog>" as Miner
+participant "User A <&person>" as UserA
+participant "User B <&person>" as UserB
+entity "Bitcoin Wallet" as Wallet
+database "Blockchain <&cloud>" as Blockchain
+entity "Miner <&gear>" as Miner
 
-note right of Customer: Customers use wallets\nto send or receive Bitcoins
-note right of Blockchain: A public ledger that\nrecords all Bitcoin transactions
+note right of UserA: User A wants to send\nbitcoins to User B
 
-Customer -> Wallet : Sends/Receives Bitcoins
-Wallet -> Blockchain : Records the transaction
-Blockchain -> Miner : Verifies the transaction
-note right of Miner: Miners use powerful computers\nto validate transactions\nand are rewarded with Bitcoins
+UserA -> Wallet: Initiates transaction
+Wallet -> Blockchain: Broadcasts transaction
+note over Blockchain: Transaction is now\npending confirmation
 
+Blockchain -> Miner: Transaction for validation
+note right of Miner: Miner validates the transaction\nusing proof of work
+
+Miner -> Blockchain: Adds transaction to new block
+note over Blockchain: Transaction is confirmed\nand added to the blockchain
+
+Blockchain -> UserB: User B receives bitcoins
+
+note over UserB: Transaction is complete
 @enduml

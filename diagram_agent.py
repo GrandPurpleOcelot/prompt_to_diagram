@@ -177,16 +177,17 @@ if convert_button:
     retry_count = 0
     error_message = None
     while retry_count < 3:
-        generated_code = nl_to_plantuml(
-            nl_instruction,
-            selected_diagram_type,
-            include_title,
-            use_aws_orange_theme,
-            use_note,
-            use_illustration,
-            error_details=error_message,
-            failed_code=st.session_state['plantuml_code'] if error_message else None
-        )
+        with st.spinner(text="🤔 Thinking deeply about your requirements..."):
+            generated_code = nl_to_plantuml(
+                nl_instruction,
+                selected_diagram_type,
+                include_title,
+                use_aws_orange_theme,
+                use_note,
+                use_illustration,
+                error_details=error_message,
+                failed_code=st.session_state['plantuml_code'] if error_message else None
+            )
         if generated_code:
             valid_plantuml_code = extract_plantuml_code(generated_code)
             if valid_plantuml_code:
@@ -196,7 +197,7 @@ if convert_button:
                 plantuml_code = plantuml_code_placeholder.text_area(
                     "You can edit the diagram if you wish 👇, diagram will updated accordingly 🥳:",
                     value=st.session_state['plantuml_code'],
-                    height=300,
+                    height=300,key='unique_key_1'
                 )
                 output_puml_file, output_png_file, error_message = generate_uml_diagram(
                     st.session_state['plantuml_code'], output_dir=output_dir, plantuml_jar_path=plantuml_jar_path
