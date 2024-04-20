@@ -1,19 +1,19 @@
 @startuml
 !theme aws-orange
 
-title OpenAI API Workflow
+title How Bitcoin Works - Simplified Thien
 
-participant "Customer <&person>" as customer
-participant "API Gateway <&cloud>" as gateway
-participant "OpenAI API <&cogs>" as openai
-database "Model Data <&database>" as model
+participant "Customer <&person>" as Customer
+entity "Wallet <&wallet>" as Wallet
+database "Blockchain <&database>" as Blockchain
+participant "Miner <&cog>" as Miner
 
-customer -> gateway : 1. Sends request\n(API key, prompt)
-gateway -> openai : 2. Forwards request
-note right of openai : Validates API key\nand processes prompt
-openai -> model : 3. Accesses model data
-model --> openai : 4. Returns model output
-openai --> gateway : 5. Sends response
-gateway --> customer : 6. Returns generated text
+note right of Customer: Customers use wallets\nto send or receive Bitcoins
+note right of Blockchain: A public ledger that\nrecords all Bitcoin transactions
+
+Customer -> Wallet : Sends/Receives Bitcoins
+Wallet -> Blockchain : Records the transaction
+Blockchain -> Miner : Verifies the transaction
+note right of Miner: Miners use powerful computers\nto validate transactions\nand are rewarded with Bitcoins
 
 @enduml

@@ -39,12 +39,12 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
     if use_note:
         instruction_message += " Use note if needed to explain more details."
     if use_illustration:
-        instruction_message += " Use Open Iconic syntax such as 'Customer <&person>' or 'AWS <&cloud>' to illustrate diagram elements."
+        instruction_message += " Use Open Iconic syntax such as 'User <&person>' or 'AWS <&cloud>' to illustrate diagram elements."
     instruction_message += f" You MUST Output PlantUML code for a {diagram_type} only and explain nothing. For example the code will start with: {example}"
 
     if error_details and failed_code:
         nl_instruction += f"\n\nPrevious error details: {error_details}\n\nFailed PlantUML code:\n{failed_code}"
-    print(instruction_message)
+    
     try:
         # Use the OpenAI API to generate a response
         openai_response = openai.chat.completions.create(
@@ -163,7 +163,7 @@ nl_instruction = st.text_area(
     label="Describe your requirements in natural language:",
     height=150,
     value=st.session_state.get('nl_instruction', ''),
-    placeholder="Help me create an instruction on how to bake a brownie"
+    placeholder="Explain how Bitcoin works"
 )
 
 # Button to convert natural language to PlantUML code
@@ -197,7 +197,6 @@ if convert_button:
                     "You can edit the diagram if you wish 👇, diagram will updated accordingly 🥳:",
                     value=st.session_state['plantuml_code'],
                     height=300,
-                    key="plantuml_code_area"
                 )
                 output_puml_file, output_png_file, error_message = generate_uml_diagram(
                     st.session_state['plantuml_code'], output_dir=output_dir, plantuml_jar_path=plantuml_jar_path
@@ -227,7 +226,6 @@ else:
             "You can edit the diagram if you wish 👇, diagram will updated accordingly 🥳:",
             value=st.session_state['plantuml_code'],
             height=300,
-            key="plantuml_code_area"
         )
         # Update the session state when the user edits the code
         st.session_state['plantuml_code'] = plantuml_code
