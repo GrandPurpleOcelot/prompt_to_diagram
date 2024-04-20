@@ -4,7 +4,7 @@ diagram_types = [
     "Class Diagram",
     "Use Case Diagram",
     "Sequence Diagram",
-    "Activity Diagram",
+    "Activity Diagram (Flow Chart) - New Syntax",
     "Component Diagram",
     "State Diagram",
     "Object Diagram",
@@ -16,7 +16,136 @@ diagram_types = [
     "Gantt Chart",
     "MindMap Diagram",
     "Work Breakdown Structure (WBS) Diagram",
+    "JSON Data",
+    "YAML Data",
+    "EBNF diagram",
+    "Network diagram (nwdiag)",
+    "Salt (Wireframe)",
+    "ArchiMate Diagram",
+    "Gantt Chart",
+    "MindMap",
+    "Maths",
+    "Entity Relationship Diagram"
 ]
+
+
+diagrams = [
+    {
+      "diagram_type": "Let AI decide best Diagram",
+      "useful_for": "Assistant selects the best fit diagram based on the input requirements.",
+      "example": "@startuml\n"
+    },
+    {
+      "diagram_type": "Sequence Diagram",
+      "useful_for": "Dynamic modeling of object interactions.",
+      "example": "@startuml\nAlice -> Bob: Message\n@enduml"
+    },
+    {
+      "diagram_type": "Activity Diagram (Flow Chart) - New Syntax",
+      "useful_for": "Modeling business and software processes.",
+      "example": "@startuml\nstart\n:activity;\nstop\n@enduml"
+    },
+    {
+      "diagram_type": "Class Diagram",
+      "useful_for": "Software design to show classes and relationships.",
+      "example": "@startuml\nClass01 <|-- Class02\n@enduml"
+    },
+    {
+      "diagram_type": "Use Case Diagram",
+      "useful_for": "System analysis to represent user interactions.",
+      "example": "@startuml\n:User: -- (UseCase)\n@enduml"
+    },
+    {
+      "diagram_type": "Entity Relationship Diagram",
+      "useful_for": "Database design to show entity relationships.",
+      "example": "@startuml\n[Entity1] -- [Entity2]\n@enduml"
+    },
+    {
+      "diagram_type": "Gantt Chart",
+      "useful_for": "Project management to visualize project schedules.",
+      "example": "@startgantt\n[Task1] lasts 5 days\n@endgantt"
+    },
+    {
+      "diagram_type": "MindMap Diagram",
+      "useful_for": "Brainstorming and organizing thoughts.",
+      "example": "@startmindmap\n* MindMap\n** Sub-Topic\n@endmindmap"
+    },
+    {
+      "diagram_type": "Component Diagram",
+      "useful_for": "System architecture to show components and dependencies.",
+      "example": "@startuml\n[Component1] ..> [Component2]\n@enduml"
+    },
+    {
+      "diagram_type": "State Diagram",
+      "useful_for": "Behavioral modeling of state changes.",
+      "example": "@startuml\n[*] --> State1\n@enduml"
+    },
+    {
+      "diagram_type": "Deployment Diagram",
+      "useful_for": "Planning hardware and software deployment.",
+      "example": "@startuml\nnode1 -- node2\n@enduml"
+    },
+    {
+      "diagram_type": "Network diagram (nwdiag)",
+      "useful_for": "Designing and visualizing network architectures.",
+      "example": "@startnwdiag\nnwdiag {\n  network dmz {\n    web01 [address = '192.168.0.1'];\n  }\n}\n@endnwdiag"
+    },
+    {
+      "diagram_type": "Work Breakdown Structure (WBS) Diagram",
+      "useful_for": "Project management to break down projects into manageable parts.",
+      "example": "@startwbs\n* Project\n** Task1\n*** Subtask1\n@endwbs"
+    },
+    {
+      "diagram_type": "Object Diagram",
+      "useful_for": "Detailed modeling showing instances and relationships.",
+      "example": "@startuml\nobject Object1\n@enduml"
+    },
+    {
+      "diagram_type": "Interaction Overview Diagram",
+      "useful_for": "Overview of complex system interactions.",
+      "example": "@startuml\n(*) --> if \"Condition\" then\n-->[true] \"Activity1\"\n@enduml"
+    },
+    {
+      "diagram_type": "Timing Diagram",
+      "useful_for": "Systems engineering to visualize timing constraints.",
+      "example": "@startuml\ntiming\n@enduml"
+    },
+    {
+      "diagram_type": "Wireframe",
+      "useful_for": "UI/UX design to layout user interfaces.",
+      "example": "@startsalt\n{\nJust a simple wireframe\n}\n@endsalt"
+    },
+    {
+      "diagram_type": "JSON Data",
+      "useful_for": "Data interchange between systems.",
+      "example": "{\n\"key\": \"value\"\n}"
+    },
+    {
+      "diagram_type": "YAML Data",
+      "useful_for": "Configuration files and data serialization.",
+      "example": "key: value"
+    },
+    {
+      "diagram_type": "EBNF diagram",
+      "useful_for": "Specification of computer language syntax.",
+      "example": "@startebnf\n\"rule\" = 'definition';\n@endebnf"
+    },
+    {
+      "diagram_type": "ArchiMate Diagram",
+      "useful_for": "Enterprise architecture to describe architectures.",
+      "example": "@startuml\n[Element] ..> [AnotherElement]\n@enduml"
+    },
+    {
+      "diagram_type": "Salt (Wireframe)",
+      "useful_for": "Advanced wireframing.",
+      "example": "@startsalt\n{\nYour wireframe here\n}\n@endsalt"
+    },
+    {
+      "diagram_type": "Maths",
+      "useful_for": "Mathematical modeling and visualization.",
+      "example": "@startmath\n\\sum_{i=1}^n i = \\frac{n(n+1)}{2}\n@endmath"
+    }
+    ]
 
 sample_plantuml = '''@startuml
 participant User

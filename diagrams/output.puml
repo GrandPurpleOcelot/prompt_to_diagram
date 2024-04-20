@@ -1,45 +1,19 @@
-@startuml Banking Business Model
+@startuml
 !theme aws-orange
 
-title Basics Components of a Banking Business and Revenue Generation
+title OpenAI API Workflow
 
-actor Customer
-participant "Banking System" as BS
-participant "Savings Account" as SA
-participant "Loan Services" as LS
-participant "Investment Services" as IS
-participant "Interbank Network" as IN
-participant "Financial Markets" as FM
+participant "Customer <&person>" as customer
+participant "API Gateway <&cloud>" as gateway
+participant "OpenAI API <&cogs>" as openai
+database "Model Data <&database>" as model
 
-== Account Management ==
-Customer -> BS: Open Account
-BS -> SA: Create Savings Account
-note right of SA: Offers interest on deposits\nas an incentive for customers
-
-== Deposit Operations ==
-Customer -> SA: Deposit Money
-note right of SA: Deposits increase the bank's capital\navailable for loans and investments
-
-== Loan Services ==
-Customer -> LS: Apply for Loan
-LS -> BS: Check Creditworthiness
-BS --> LS: Credit Approved
-LS -> Customer: Disburse Loan
-note right of LS: Interest on loans is higher\nthan interest paid on savings
-
-== Investment Services ==
-Customer -> IS: Invest in Securities
-IS -> FM: Buy Securities
-note right of IS: Banks earn commissions and\nprofit from securities trading
-
-== Interbank Lending ==
-BS -> IN: Lend Money to Other Banks
-IN -> BS: Repay with Interest
-note right of IN: Short-term lending to manage liquidity\nand earn interest
-
-== Fees and Charges ==
-Customer -> BS: Request Service (e.g., wire transfer)
-BS -> Customer: Charge Service Fee
-note right of BS: Fees for various banking services\nadd to the bank's revenue
+customer -> gateway : 1. Sends request\n(API key, prompt)
+gateway -> openai : 2. Forwards request
+note right of openai : Validates API key\nand processes prompt
+openai -> model : 3. Accesses model data
+model --> openai : 4. Returns model output
+openai --> gateway : 5. Sends response
+gateway --> customer : 6. Returns generated text
 
 @enduml
