@@ -48,13 +48,13 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
 
     if error_details and failed_code:
         # nl_instruction += f"\n\nPrevious error details: {error_details}\n\nPlantUML code from diagrams\output.puml:\n{failed_code}\n"
-        # nl_instruction += " Please review the error details and provide a revision of the PlantUML code. Try changing to Sequence Diagram."
+        # nl_instruction += " Why this PlantUML code doesn't run? Analyze the code for any syntax error and return a corrected PlantUML code."
         nl_instruction += " You must use Sequence Diagram for this request."
    
     try:
         # Use the Anthropic API to generate a response
         claude_response = client.messages.create(
-            model="claude-3-opus-20240229",
+            model="claude-3-sonnet-20240229",
             max_tokens=4000,
             temperature=0.5,
             system=instruction_message,

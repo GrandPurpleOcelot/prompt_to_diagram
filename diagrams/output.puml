@@ -1,24 +1,47 @@
 @startuml
 !theme aws-orange
 
-title Life Cycle of a Dog
+title Bitcoin: A Decentralized Digital Currency
 
-participant Puppy
-participant Adult
-participant Senior
+card "Bitcoin Network" {
+  node "Nodes (Miners)" {
+    card "Validate Transactions" {
+      Transactions are validated and
+      verified by nodes through
+      complex cryptographic calculations.
+    }
+    card "Create New Blocks" {
+      Validated transactions are
+      grouped into new blocks,
+      which are added to the blockchain.
+    }
+  }
 
-note over Puppy: Born and nurtured by mother
+  card "Blockchain" {
+    A distributed and decentralized
+    public ledger that records
+    all confirmed transactions.
+  }
 
-Puppy -> Adult: Grows and matures
-note right of Adult: Reaches physical maturity
+  card "Wallets" {
+    Software or hardware devices
+    that store private keys and
+    allow users to send and receive bitcoins.
+  }
 
-Adult -> Adult: Reproduces
-note right of Adult: May have multiple litters
+  card "Mining" {
+    Nodes compete to solve complex
+    mathematical puzzles to validate
+    transactions and create new blocks,
+    earning rewards in the form of new bitcoins.
+  }
+}
 
-Adult -> Senior: Ages
-note right of Senior: Health declines with age
-
-Senior -> Senior: End of life
-note right of Senior: Passes away
+note left of "Bitcoin Network"
+  - Decentralized
+  - Transparent
+  - Secure
+  - Pseudonymous
+end note
 
 @enduml
