@@ -3,7 +3,7 @@ import subprocess
 import os
 import re
 from pathlib import Path
-import openai
+from anthropic import Anthropic
 import tempfile
 from data import diagrams
 import glob
@@ -18,14 +18,16 @@ output_dir = Path('./diagrams')
 # Path to the PlantUML .jar file
 plantuml_jar_path = './plantuml.jar'
 
-# Connect to OpenAI key
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Connect to Anthropic Services
+client = Anthropic(
+    api_key=st.secrets["ANTHROPIC_API_KEY"],
+)
 
 # Initialize session state for PlantUML code
 if 'plantuml_code' not in st.session_state:
     st.session_state['plantuml_code'] = ""
 
-# Function to convert natural language instruction to PlantUML code using OpenAI
+# Function to convert natural language instruction to PlantUML code using Anthropic
 def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_theme, use_note, use_illustration, error_details=None, failed_code=None):
     example = df_diagrams[df_diagrams['diagram_type'] == diagram_type]['example'].iloc[0]
     if diagram_type == "Let AI decide best Diagram":
@@ -48,22 +50,30 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
         # nl_instruction += f"\n\nPrevious error details: {error_details}\n\nPlantUML code from diagrams\output.puml:\n{failed_code}\n"
         # nl_instruction += " Please review the error details and provide a revision of the PlantUML code. Try changing to Sequence Diagram."
         nl_instruction += " You must use Sequence Diagram for this request."
-
+   
     try:
-        # Use the OpenAI API to generate a response
-        openai_response = openai.chat.completions.create(
-            model="gpt-4-turbo-preview",
-            messages=[
-                {"role": "system", "content": instruction_message},
-                {"role": "user", "content": nl_instruction}
-            ],
+        # Use the Anthropic API to generate a response
+        claude_response = client.messages.create(
+            model="claude-3-opus-20240229",
+            max_tokens=4000,
             temperature=0.5,
-            stream=False,
-        )
-        plantuml_code = openai_response.choices[0].message.content
+            system=instruction_message,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": nl_instruction
+                        }
+                    ]
+                }
+            ]
+        )    
+        plantuml_code = claude_response.content[0].text
         return plantuml_code
     except Exception as e:
-        st.error(f"An error occurred with the OpenAI API: {e}")
+        st.error(f"An error occurred with the Anthropic API: {e}")
         return None
 
 # Function to generate UML diagram from PlantUML code
