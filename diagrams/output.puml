@@ -1,31 +1,24 @@
 @startuml
-title How to Bake a Brownie
-
 !theme aws-orange
 
-actor Baker
+title Life Cycle of a Dog
 
-group Preparation
-    Baker -> Ingredients: Gather ingredients
-    Baker -> Oven: Preheat to 350°F (175°C)
-    Baker -> "Baking Pan": Grease and flour
-end
+participant Puppy
+participant Adult
+participant Senior
 
-group Mixing
-    Baker -> "Mixing Bowl": Melt butter and chocolate
-    Baker -> "Mixing Bowl": Add sugar and mix well
-    Baker -> "Mixing Bowl": Beat in eggs one at a time
-    Baker -> "Mixing Bowl": Stir in vanilla extract
-    Baker -> "Mixing Bowl": Gradually add flour and mix until combined
-end
+note over Puppy: Born and nurtured by mother
 
-Baker -> "Baking Pan": Pour batter into prepared pan
-Baker -> Oven: Bake for 25-30 minutes
+Puppy -> Adult: Grows and matures
+note right of Adult: Reaches physical maturity
 
-Baker -> Brownie: Check for doneness with a toothpick
-note right: Insert a toothpick into the center of the brownie. \nIf it comes out with a few moist crumbs, it's done.
+Adult -> Adult: Reproduces
+note right of Adult: May have multiple litters
 
-Baker -> Oven: Remove brownie from oven
-Baker -> "Cooling Rack": Let cool completely before cutting
+Adult -> Senior: Ages
+note right of Senior: Health declines with age
+
+Senior -> Senior: End of life
+note right of Senior: Passes away
 
 @enduml

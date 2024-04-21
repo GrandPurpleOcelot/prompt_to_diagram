@@ -152,16 +152,10 @@ def get_image_download_link(img_path):
 
 # Streamlit application layout
 st.title('Agent Peter - Diagram Generator')
+st.markdown('**How to use Peter**', help='''1. Select the type of diagram you want to create.\n2. Describe your requirements in natural language.\n3. Click **Generate diagram** to generate code.\n4. You can **Edit** the PlantUML code if needed.\n5. You can **Download** the generated diagram.''')
 
 # Sidebar content
 with st.sidebar:
-    st.header("How to use Peter:")
-    st.write("1. Select the type of diagram you want to create.")
-    st.write("2. Describe your requirements in natural language.")
-    st.write("3. Click **Convert to PlantUML** to generate code.")
-    st.write("4. You can **Edit** the PlantUML code if needed.")
-    st.write("5. You can **Download** the generated diagram.")
-
     st.header("Agent controls:")
     # Select box for choosing diagram type
     selected_diagram_type = st.selectbox("Choose diagram type:", df_diagrams['diagram_type'].to_list(), index=0)
@@ -181,7 +175,7 @@ nl_instruction = st.text_area(
 )
 
 # Button to convert natural language to PlantUML code
-convert_button = st.button("Convert to PlantUML", type="primary",use_container_width=True)
+convert_button = st.button("Generate diagram", type="primary",use_container_width=True)
 
 # Placeholder for PlantUML code text_area - this will be used to display the text_area conditionally
 plantuml_code_placeholder = st.empty()
