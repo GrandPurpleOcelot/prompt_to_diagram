@@ -162,7 +162,6 @@ def generate_plan(nl_instruction):
         return None
     
 def process_and_generate_diagrams(input_text):
-    print(input_text)
     retry_count = 0
     error_message = None
     while retry_count < 3:
@@ -193,15 +192,13 @@ def process_and_generate_diagrams(input_text):
                     
                     # Provide a download button for the image
                     get_image_download_link(str(output_png_file))
-                    
-                    # Placeholder for PlantUML code text_area - this will be used to display the text_area conditionally
-                    plantuml_code_placeholder = st.empty()
 
-                    plantuml_code = plantuml_code_placeholder.text_area(
-                    "🥳 Here's your PlantUML code if you need to generate this graph else where:",
-                    value=st.session_state['plantuml_code'],
-                    height=300, key='unique_key_1'
-                    )
+                    if display_code:
+                        st.text("🥳 Here's your PlantUML code if you need to generate this graph else where:")
+                        plantuml_code = st.code(
+                            body=st.session_state['plantuml_code'],
+                            line_numbers=True
+                        )
                         
                     break  # Exit loop on success
             else:
@@ -223,6 +220,7 @@ with st.sidebar:
 
     # Toggles for instruction message content
     use_planning = st.toggle("Enable Planning Mode", value=True)
+    display_code = st.toggle("Display generated diagram code", value=False)
     include_title = st.checkbox("Include a title",value=True)
     use_aws_orange_theme = st.checkbox("Use aws-orange theme", value=True)
     use_illustration = st.checkbox("Use grouping", value=True)
@@ -275,11 +273,12 @@ else:
             # Provide a download button for the image
             get_image_download_link(str(output_png_file))
 
-            plantuml_code = st.text_area(
-                "🥳 Here's your PlantUML code if you need to generate this graph else where:",
-                value=st.session_state['plantuml_code'],
-                height=300, key='unique_key_6'
-            )
+            if display_code:
+                st.text("🥳 Here's your PlantUML code if you need to generate this graph else where:")
+                plantuml_code = st.code(
+                    body=st.session_state['plantuml_code'],
+                    line_numbers=True
+                )
             
 
 

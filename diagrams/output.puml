@@ -4,25 +4,34 @@
 title Scrambled Eggs Recipe Process
 
 group Preparation
-    :Beat 2-3 eggs in a bowl;
-    note right: Add a pinch of salt and pepper. Optional: Add milk for creaminess.
+note right
+  Crack 2-3 eggs into a bowl.
+  Add a pinch of salt and pepper.
+  Beat the eggs until mixed.
+end note
 end group
 
 group Heat the Pan
-    :Place a non-stick skillet on medium heat;
-    :Add a tablespoon of butter or oil;
+note right
+  Use a non-stick frying pan.
+  Add a teaspoon of butter or oil.
+  Spread it evenly across the pan.
+end note
 end group
 
 group Cook the Eggs
-    :Pour the beaten eggs into the skillet;
-    :Let them sit without stirring for a few seconds until they start to set around the edges;
-    :Gently stir with a spatula, pulling the eggs from the edges to the center;
+note right
+  Pour beaten eggs into the pan.
+  Let sit, then stir from edges to center.
+  Cook until slightly moist.
+end note
 end group
 
 group Serve
-    :Once the eggs are mostly set but still slightly runny, remove from heat;
-    note right: They will continue to cook in the residual heat.
-    :Serve immediately on a plate;
+note right
+  Transfer to a plate.
+  Optionally, garnish with herbs.
+end note
 end group
 
 @enduml
