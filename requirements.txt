@@ -2,3 +2,4 @@ openai
 streamlit
 watchdog
 pandas
+pyperclip

@@ -8,7 +8,6 @@ import tempfile
 from data import diagrams
 import glob
 import pandas as pd
-import pyperclip
 
 # import the list of supported diagrams
 df_diagrams = pd.DataFrame(diagrams)
@@ -36,25 +35,18 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
     if include_title:
         instruction_message += " Include a title."
     if use_aws_orange_theme:
-        instruction_message += " Use aws-orange theme. Syntax: !theme aws-orange"
+        instruction_message += " Use aws-orange theme."
     if use_note:
         instruction_message += " Use note if needed to explain more details."
     if use_illustration:
-        instruction_message += " Use group or card if needed."
-    instruction_message += f''' You MUST Output PlantUML code for a {diagram_type} only and explain nothing.
-    For example the code will start with: {example}.
-    '''
+        instruction_message += " Use Open Iconic syntax such as 'User <&person>' or 'AWS <&cloud>' to illustrate diagram elements."
+    instruction_message += f" You MUST Output PlantUML code for a {diagram_type} only and explain nothing. For example the code will start with: {example}"
 
     if error_details and failed_code:
-        # nl_instruction += f"\n\nPrevious error details: {error_details}\n\nPlantUML code from diagrams\output.puml:\n{failed_code}\n"
-        # nl_instruction += " Why this PlantUML code doesn't run? Analyze the code for any syntax error and return a corrected PlantUML code."
-        nl_instruction += " You must use Sequence Diagram for this request."
-
+        nl_instruction += f"\n\nPrevious error details: {error_details}\n\nFailed PlantUML code:\n{failed_code}"
+    
     try:
         # Use the OpenAI API to generate a response
-        print("Instruction message: ", instruction_message)
-        print("NL Instruction: ", nl_instruction)
-
         openai_response = openai.chat.completions.create(
             model="gpt-4-turbo-preview",
             messages=[
@@ -106,7 +98,7 @@ def generate_uml_diagram(plantuml_code, output_dir, plantuml_jar_path):
             else:
                 error_message = "Failed to create the output diagram or PlantUML error."
                 if subprocess_result.stderr:
-                    error_message = subprocess_result.stderr
+                    print(subprocess_result.stderr)
                 retries -= 1
         except Exception as e:
             error_message = f"An error occurred: {str(e)}"
@@ -144,31 +136,50 @@ def get_image_download_link(img_path):
         )
     return btn
 
-# Function to generate a plan using OpenAI
-def generate_plan(nl_instruction):
-    try:
-        openai_response = openai.chat.completions.create(
-            model="gpt-4-turbo-preview",
-            messages=[
-                {"role": "system", "content": "Generate a brief plan based on the user's description. This plan will be used to create a diagram. Keep the plan concise and relevant."},
-                {"role": "user", "content": nl_instruction}
-            ],
-            temperature=0.5,
-            stream=False,
-        )
-        return openai_response.choices[0].message.content
-    except Exception as e:
-        st.error(f"An error occurred with the OpenAI API: {e}")
-        return None
-    
-def process_and_generate_diagrams(input_text):
-    print(input_text)
+# Streamlit application layout
+st.title('Agent Peter - Diagram Generator')
+
+# Sidebar content
+with st.sidebar:
+    st.header("How to use Peter:")
+    st.write("1. Select the type of diagram you want to create.")
+    st.write("2. Describe your requirements in natural language.")
+    st.write("3. Click **Convert to PlantUML** to generate code. Sometimes it may throw an error; press button again to retry.")
+    st.write("4. You can **Edit** the PlantUML code if needed.")
+    st.write("5. You can **Download** the generated diagram.")
+
+    st.header("Agent controls:")
+    # Select box for choosing diagram type
+    selected_diagram_type = st.selectbox("Choose diagram type:", df_diagrams['diagram_type'].to_list(), index=0)
+
+    # Toggles for instruction message content
+    include_title = st.toggle("Include a title",value=True)
+    use_aws_orange_theme = st.toggle("Use aws-orange theme", value=True)
+    use_illustration = st.toggle("Use icons", value=True)
+    use_note = st.toggle("Use notes", value=True)
+
+# Text area for user to enter natural language instructions
+nl_instruction = st.text_area(
+    label="Describe your requirements in natural language:",
+    height=150,
+    value=st.session_state.get('nl_instruction', ''),
+    placeholder="Explain how Bitcoin works"
+)
+
+# Button to convert natural language to PlantUML code
+convert_button = st.button("Convert to PlantUML", type="primary",use_container_width=True)
+
+# Placeholder for PlantUML code text_area - this will be used to display the text_area conditionally
+plantuml_code_placeholder = st.empty()
+
+# When the button is clicked, convert the natural language to PlantUML code
+if convert_button:
     retry_count = 0
     error_message = None
     while retry_count < 3:
-        with st.spinner(text="🤔 Thinking on how to draw this plan..."):
+        with st.spinner(text="🤔 Thinking deeply about your requirements..."):
             generated_code = nl_to_plantuml(
-                input_text,
+                nl_instruction,
                 selected_diagram_type,
                 include_title,
                 use_aws_orange_theme,
@@ -181,33 +192,26 @@ def process_and_generate_diagrams(input_text):
             valid_plantuml_code = extract_plantuml_code(generated_code)
             if valid_plantuml_code:
                 st.session_state['plantuml_code'] = valid_plantuml_code
-                st.session_state['nl_instruction'] = input_text
+                st.session_state['nl_instruction'] = nl_instruction
                 
+                plantuml_code = plantuml_code_placeholder.text_area(
+                    "You can edit the PlantUML code if you wish 👇, diagram will updated accordingly 🥳:",
+                    value=st.session_state['plantuml_code'],
+                    height=300,key='unique_key_1'
+                )
                 output_puml_file, output_png_file, error_message = generate_uml_diagram(
                     st.session_state['plantuml_code'], output_dir=output_dir, plantuml_jar_path=plantuml_jar_path
                 )
                 if output_png_file:
-                    st.toast("Successfully generated your diagram", icon='✅')
+                    st.toast("Successfully generated your diagram",icon='✅')
                     # Display the generated diagram
                     st.image(str(output_png_file), caption='Diagram generated by Peter', use_column_width=False)
                     
                     # Provide a download button for the image
                     get_image_download_link(str(output_png_file))
                     
-                    # Placeholder for PlantUML code text_area - this will be used to display the text_area conditionally
-                    plantuml_code_placeholder = st.empty()
-
-                    plantuml_code = plantuml_code_placeholder.text_area(
-                    "🥳 Here's your PlantUML code if you need to generate this graph else where:",
-                    value=st.session_state['plantuml_code'],
-                    height=300, key='unique_key_1'
-                    )
-
-                    # Copy to clipboard button
-                    if st.button("Copy PlantUML Code to Clipboard"):
-                        pyperclip.copy(plantuml_code)
-                        st.toast("Copied to clipboard", icon='✅')
-                        
+                    # Remove the output diagram file after displaying it
+                    os.remove(output_png_file)
                     break  # Exit loop on success
             else:
                 st.error("No valid PlantUML code block found. Retrying...")
@@ -215,81 +219,29 @@ def process_and_generate_diagrams(input_text):
         else:
             st.error("Failed to convert to PlantUML code.")
             break  # Exit loop on conversion failure
-
-# Streamlit application layout
-st.title('Agent Peter - Diagram Generator')
-st.markdown('**How to use Peter**', help='''1. Select the type of diagram you want to create.\n2. Describe your requirements in natural language.\n3. Click **Generate diagram** to generate code.\n4. You can **Edit** the PlantUML code if needed.\n5. You can **Download** the generated diagram.''')
-
-# Sidebar content
-with st.sidebar:
-    st.header("Agent controls:")
-    # Select box for choosing diagram type
-    selected_diagram_type = st.selectbox("Choose diagram type:", df_diagrams['diagram_type'].to_list(), index=0)
-
-    # Toggles for instruction message content
-    use_planning = st.toggle("Enable Planning Mode", value=True)
-    include_title = st.checkbox("Include a title",value=True)
-    use_aws_orange_theme = st.checkbox("Use aws-orange theme", value=True)
-    use_illustration = st.checkbox("Use grouping", value=True)
-    use_note = st.checkbox("Use notes", value=True)
-
-# Text area for user to enter natural language instructions
-nl_instruction = st.text_area(
-    label="Describe your requirements in natural language:",
-    height=150,
-    value=st.session_state.get('nl_instruction', ''),
-    placeholder="Explain how Bitcoin works"
-)
-
-# Button to convert natural language to PlantUML code
-convert_button = st.button("Generate diagram", type="primary",use_container_width=True)
-
-# When the button is clicked, convert the natural language to PlantUML code
-if convert_button:
-    if use_planning:
-        # Generate plan and directly use it for conversion
-        with st.spinner(text="🤔 Planning..."):
-            plan = generate_plan(nl_instruction)
-        if plan:
-            st.session_state['plan'] = plan
-            st.subheader('Done thinking! Here is the plan:') 
-            st.write(plan)
-            process_and_generate_diagrams(plan)
-        else:
-            st.error("Failed to generate a plan.")
-    else:
-        # Proceed with direct conversion using the natural language instruction
-        process_and_generate_diagrams(nl_instruction)
-
 else:
     # Check if there is PlantUML code in the session state before creating the text_area
     if st.session_state['plantuml_code']:
+        # Create the text_area for PlantUML code inside the placeholder
+        plantuml_code = plantuml_code_placeholder.text_area(
+            "You can edit the diagram if you wish 👇, diagram will updated accordingly 🥳:",
+            value=st.session_state['plantuml_code'],
+            height=300, key="unique_field_2"
+        )
+        # Update the session state when the user edits the code
+        st.session_state['plantuml_code'] = plantuml_code
+        
+        st.subheader('Generated Diagram')
         # Generate and display the diagram
         output_puml_file, output_png_file, error_message = generate_uml_diagram(
             st.session_state['plantuml_code'], output_dir=output_dir, plantuml_jar_path=plantuml_jar_path
         )
         if output_png_file:
-            # Conditionally display the plan if it exists
-            if 'plan' in st.session_state:
-                st.subheader('Done thinking! Here is the plan:')
-                st.write(st.session_state['plan'])
-
             # Display the generated diagram
             st.image(str(output_png_file), caption='Diagram generated by Peter', use_column_width=False)
             
             # Provide a download button for the image
             get_image_download_link(str(output_png_file))
-
-            plantuml_code = st.text_area(
-                "🥳 Here's your PlantUML code if you need to generate this graph else where:",
-                value=st.session_state['plantuml_code'],
-                height=300, key='unique_key_6'
-            )
-
-            # Copy to clipboard button
-            if st.button("Copy PlantUML Code to Clipboard"):
-                pyperclip.copy(plantuml_code)
-                st.toast("Copied to clipboard", icon='✅')
             
-
-
+            # Remove the output diagram file after displaying it
+            os.remove(output_png_file)

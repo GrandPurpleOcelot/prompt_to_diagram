@@ -1,17 +1,30 @@
 @startuml
 !theme aws-orange
 
-title How Bitcoin Works
-
-participant "User <&person>" as User
-entity "Wallet Software" as Wallet
-database "Bitcoin Network <&cloud>" as Network
-database "Blockchain Ledger" as Ledger
-
-User -> Wallet : Initiates Transaction
-Wallet -> Network : Broadcasts Transaction
-note right of Network : Transactions are verified\nby network nodes through cryptography
-Network -> Ledger : Records Transaction
-note right of Ledger : Transactions are added to blocks\nand linked together in a chain
-
+|Receiving Lane (Suppliers and Receiving Staff)|
+start
+:Suppliers deliver ingredients;
+:Receiving staff checks quality and quantity;
+:Approved ingredients are stored in pantry or refrigerator;
+|Preparation Lane (Prep Cooks)|
+:Take necessary ingredients from storage;
+:Wash, cut, marinate, or mix ingredients;
+:Set prepared ingredients aside for cooking;
+|Cooking Lane (Chefs and Line Cooks)|
+:Chefs assign cooking tasks;
+:Line cooks cook dishes according to menu;
+:Finished dishes are plated and garnished;
+|Expedition Lane (Expediter and Servers)|
+:The expediter checks quality and presentation;
+:Servers are notified dishes are ready;
+:Servers deliver dishes to customers;
+|Cleaning Lane (Dishwashers and Cleaning Staff)|
+:Collect used dishes and utensils;
+:Dishwashers clean dishes and utensils;
+:Cleaning staff cleans kitchen area;
+|Feedback and Improvement Lane (Management)|
+:Collect feedback from customers and staff;
+:Identify necessary adjustments;
+:Implement improvements based on feedback;
+stop
 @enduml
