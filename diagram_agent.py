@@ -8,7 +8,6 @@ import tempfile
 from data import diagrams
 import glob
 import pandas as pd
-import pyperclip
 
 # import the list of supported diagrams
 df_diagrams = pd.DataFrame(diagrams)
@@ -52,8 +51,8 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
 
     try:
         # Use the OpenAI API to generate a response
-        print("Instruction message: ", instruction_message)
-        print("NL Instruction: ", nl_instruction)
+        print("Instruction message:\n", instruction_message)
+        print("NL Instruction:\n", nl_instruction)
 
         openai_response = openai.chat.completions.create(
             model="gpt-4-turbo-preview",
@@ -202,11 +201,6 @@ def process_and_generate_diagrams(input_text):
                     value=st.session_state['plantuml_code'],
                     height=300, key='unique_key_1'
                     )
-
-                    # Copy to clipboard button
-                    if st.button("Copy PlantUML Code to Clipboard"):
-                        pyperclip.copy(plantuml_code)
-                        st.toast("Copied to clipboard", icon='✅')
                         
                     break  # Exit loop on success
             else:
@@ -285,11 +279,6 @@ else:
                 value=st.session_state['plantuml_code'],
                 height=300, key='unique_key_6'
             )
-
-            # Copy to clipboard button
-            if st.button("Copy PlantUML Code to Clipboard"):
-                pyperclip.copy(plantuml_code)
-                st.toast("Copied to clipboard", icon='✅')
             
 
 

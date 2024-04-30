@@ -1,30 +1,28 @@
 @startuml
 !theme aws-orange
 
-|Receiving Lane (Suppliers and Receiving Staff)|
-start
-:Suppliers deliver ingredients;
-:Receiving staff checks quality and quantity;
-:Approved ingredients are stored in pantry or refrigerator;
-|Preparation Lane (Prep Cooks)|
-:Take necessary ingredients from storage;
-:Wash, cut, marinate, or mix ingredients;
-:Set prepared ingredients aside for cooking;
-|Cooking Lane (Chefs and Line Cooks)|
-:Chefs assign cooking tasks;
-:Line cooks cook dishes according to menu;
-:Finished dishes are plated and garnished;
-|Expedition Lane (Expediter and Servers)|
-:The expediter checks quality and presentation;
-:Servers are notified dishes are ready;
-:Servers deliver dishes to customers;
-|Cleaning Lane (Dishwashers and Cleaning Staff)|
-:Collect used dishes and utensils;
-:Dishwashers clean dishes and utensils;
-:Cleaning staff cleans kitchen area;
-|Feedback and Improvement Lane (Management)|
-:Collect feedback from customers and staff;
-:Identify necessary adjustments;
-:Implement improvements based on feedback;
-stop
+title Scrambled Eggs Recipe Process
+
+group Preparation
+    :Beat 2-3 eggs in a bowl;
+    note right: Add a pinch of salt and pepper. Optional: Add milk for creaminess.
+end group
+
+group Heat the Pan
+    :Place a non-stick skillet on medium heat;
+    :Add a tablespoon of butter or oil;
+end group
+
+group Cook the Eggs
+    :Pour the beaten eggs into the skillet;
+    :Let them sit without stirring for a few seconds until they start to set around the edges;
+    :Gently stir with a spatula, pulling the eggs from the edges to the center;
+end group
+
+group Serve
+    :Once the eggs are mostly set but still slightly runny, remove from heat;
+    note right: They will continue to cook in the residual heat.
+    :Serve immediately on a plate;
+end group
+
 @enduml

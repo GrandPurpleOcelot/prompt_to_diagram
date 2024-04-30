@@ -3,4 +3,3 @@ anthropic
 streamlit
 watchdog
 pandas
-pyperclip
