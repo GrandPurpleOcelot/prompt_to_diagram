@@ -245,7 +245,7 @@ if convert_button:
             plan = generate_plan(nl_instruction)
         if plan:
             st.session_state['plan'] = plan
-            st.subheader('Done thinking! Here is the plan:') 
+            st.subheader('Done thinking ✅ Here is the plan:') 
             st.write(plan)
             process_and_generate_diagrams(plan)
         else:
