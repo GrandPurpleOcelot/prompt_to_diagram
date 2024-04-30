@@ -136,10 +136,11 @@ def extract_plantuml_code(full_code):
 def get_image_download_link(img_path):
     with open(img_path, "rb") as file:
         btn = st.download_button(
-            label="Download image",
+            label="Download diagram",
             data=file,
             file_name="diagram.png",
-            mime="image/png"
+            mime="image/png",
+            type="primary"
         )
     return btn
 
