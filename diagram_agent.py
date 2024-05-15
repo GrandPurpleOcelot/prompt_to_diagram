@@ -55,7 +55,7 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
         print("NL Instruction:\n", nl_instruction)
 
         openai_response = openai.chat.completions.create(
-            model="gpt-4-turbo-preview",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": instruction_message},
                 {"role": "user", "content": nl_instruction}
@@ -148,7 +148,7 @@ def get_image_download_link(img_path):
 def generate_plan(nl_instruction):
     try:
         openai_response = openai.chat.completions.create(
-            model="gpt-4-turbo-preview",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "Generate a brief plan based on the user's description. This plan will be used to create a diagram. Keep the plan concise and relevant."},
                 {"role": "user", "content": nl_instruction}
