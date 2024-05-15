@@ -45,9 +45,9 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
     '''
 
     if error_details and failed_code:
-        nl_instruction += f"\n\nPrevious error details: {error_details}\n\nPlantUML code from diagrams\output.puml:\n{failed_code}\n"
-        nl_instruction += " Why this PlantUML code doesn't run? Analyze the code for any syntax error and return a corrected PlantUML code."
-        # nl_instruction += " You must use Sequence Diagram for this request."
+        # nl_instruction += f"\n\nPrevious error details: {error_details}\n\nPlantUML code from diagrams\output.puml:\n{failed_code}\n"
+        # nl_instruction += " Why this PlantUML code doesn't run? Analyze the code for any syntax error and return a corrected PlantUML code."
+        nl_instruction += " You must use Sequence Diagram for this request."
 
     try:
         # Use the OpenAI API to generate a response
@@ -55,7 +55,7 @@ def nl_to_plantuml(nl_instruction, diagram_type, include_title, use_aws_orange_t
         print("NL Instruction:\n", nl_instruction)
 
         openai_response = openai.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4-turbo",
             messages=[
                 {"role": "system", "content": instruction_message},
                 {"role": "user", "content": nl_instruction}
@@ -148,7 +148,7 @@ def get_image_download_link(img_path):
 def generate_plan(nl_instruction):
     try:
         openai_response = openai.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4-turbo",
             messages=[
                 {"role": "system", "content": "Generate a brief plan based on the user's description. This plan will be used to create a diagram. Keep the plan concise and relevant."},
                 {"role": "user", "content": nl_instruction}
